@@ -1,0 +1,90 @@
+#include<reg51.h>
+#define ldata P2
+#define temp P1
+sbit r= P3^3;  // Write pin. It is used to start the conversion. 
+sbit d= P3^4;  // Read pin. It is used to extract the data from internal register to the output pins of ADC.
+sbit rs = P3^0;  //register select pin
+sbit rw = P3^1;  // read write pin
+sbit en = P3^2;  //enable pin
+void lcdcmd (unsigned char value);
+void lcddata (unsigned char value);
+void lcddata1 (unsigned char value);
+void delay(unsigned int msec )  // The delay function provides delay in msec.
+{
+int i,j ;
+for(i=0;i<msec;i++)
+  for(j=0; j<1275; j++);
+}
+
+void main()
+{  
+signed int a,b,c;     
+while(1)
+{
+d=1;     
+r=0;     
+delay(1);
+r=1;
+delay(1);
+d=0;
+delay(1);
+lcdcmd (0x38);
+delay (1);
+lcdcmd (0x0C);
+delay (1);
+lcdcmd (0x80);
+delay (1);
+lcddata ('T');
+delay (1);
+lcddata ('E');
+delay (1);
+lcddata ('M');
+delay (1);
+lcddata ('P');
+delay (1);
+lcddata (':');
+delay (1);
+lcddata ('-');
+delay (1);
+c=temp/100;
+lcddata1(c);
+delay (1);
+a=(temp/10)-(c*10);
+lcddata1(a);
+delay (1);
+b=temp%10;
+lcddata1(b);
+delay (1);
+}
+}
+void lcdcmd (unsigned char value)
+{
+ldata =value;
+rs=0;
+rw=0;
+en=1;
+delay (1);
+en=0;
+return;
+}
+void lcddata1 (unsigned char value)
+{
+value=value+0x30;
+ldata =value;
+rs=1;
+rw=0;
+en=1;
+delay (1);
+en=0;
+return;
+}
+void lcddata (unsigned char value)
+{
+ldata =value;
+rs=1;
+rw=0;
+en=1;
+delay (1);
+en=0;
+return;
+}
